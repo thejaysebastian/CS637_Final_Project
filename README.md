@@ -1,2 +1,28 @@
 # CS637_Final_Project
 This project will use the EuroSat RGB dataset to experiment with multiple Convolutional Neural Network architectures
+
+## High level requirements:
+- Use the EuroSat RGB dataset
+- Create a one-page proposal (Complete)
+- Produce a 10-minute presentation
+    - 12/15 slides
+    - Based on what was in the proposal
+    - 2-3 slides for project description, dataset description, data preprocessing (if any)
+    - Remainder of slides should show method (architecture) applied or implemented and the results
+    - Each member of the group must present a part
+    - Must be in room 5 minutes prior to show time. Presentation time is 3:30-3:40.
+- Write an individual term report
+    - Include individual contributions, analysis, and reflections on project outcomes
+    - Intro - introduce the problem being solved
+    - Dataset - briefly discuss dataset and any preprocessing that may have been needed
+    - Method - discuss method in detail
+    - Results - report results with tables and figures as needed. Results should be the same for both team members, but reporting is independent
+    - Conclusion - Your analysis about the project (such as why we chose the particular architecture, challenges faced while implementing, how I overcame issues, any further improvement possible.
+    - Format - no specified format or page limit for the report.
+
+## Possible directions to take
+We need to use the EuroSat RGB dataset.
+Thoughts: 
+- Original proposal said we would build, train, and test a model with EuroSat data. It doesn't say which model. Possible direction:
+    - Implement the DenseNet model from our paper presentation (and/or the more efficient variant). Compare to the ResNet-50 and GoogLeNet results in the original EuroSat paper. Use the same train/test split and other methodological approaches from section IV.A of the paper (e.g., pretrained on ILSVRC-2012). See Tables 2 and 3.
+
