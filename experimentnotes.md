@@ -1,14 +1,27 @@
 ## experiment info:
 
-Conduct two.
+
 
 1. Efficient DenseNet from gpleiss repo (i.e., architectures/densenet.py)
    - trained from scratch
    - demonstrates the memory-efficient implementation
 
-2. Torchvision DenseNet-121 (from )
+1. Torchvision DenseNet-121 (from torchvision)
    - ImageNet pretrained
    - fairer comparison against EuroSat baselines
+
+1. Torchvision DenseNet-121 (from torchvision)
+   - trained from scratch as control baseline
+   - comparison of DenseNet pretrained on ImageNet vs. EuroSat only
+
+1. ResNet-50 (from torchvision) OPTIONAL
+   - ImageNet pretrained
+   - EuroSat baseline - reproduction
+
+1. GoogLeNet (from torchvision) OPTIONAL
+   - ImageNet pretrained
+   - EuroSat baseline - reproduction
+
 
 | Model Variant                 | Architecture           | Pretraining    | Purpose                         |
 | ----------------------------- | ---------------------- | -------------- | ------------------------------- |
