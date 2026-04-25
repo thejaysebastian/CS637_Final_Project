@@ -1,7 +1,7 @@
 # experiments/run_experiment.py
 
 from data.eurosat import get_dataloaders
-from models.model_factory import build_model
+from architectures.model_factory import build_model
 from engine.train import train_model
 from engine.evaluate import evaluate_model
 
