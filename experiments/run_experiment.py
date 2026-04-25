@@ -5,6 +5,8 @@ from architectures.model_factory import build_model
 from engine.train import train_model
 from engine.evaluate import evaluate_model
 
+import yaml
+
 def main(config):
     train_loader, val_loader, test_loader, class_names = get_dataloaders(config)
 

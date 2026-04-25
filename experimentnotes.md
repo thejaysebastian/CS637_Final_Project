@@ -1,6 +1,13 @@
-## experiment info:
+
+# Experiment info:
 
 
+### 3 DenseNet tests, plus two optional:
+1. efficient_densenet121_scratch   → implementation effect (memory-efficient)
+2. densenet121_scratch             → architecture baseline (no pretraining)
+3. densenet121_pretrained          → best-case performance (ImageNet transfer)
+
+Here is a breakdown:
 
 1. Efficient DenseNet from gpleiss repo (i.e., architectures/densenet.py)
    - trained from scratch

@@ -1,0 +1,8 @@
+# NOTE: Check hyperparameters from Eurosat paper
+
+model: resnet50_pretrained
+
+pretrained: true
+
+learning_rate: 0.0001
+epochs: 30
