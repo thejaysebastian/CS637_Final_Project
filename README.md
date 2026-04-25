@@ -2,18 +2,41 @@
 This project will use the EuroSat RGB dataset to experiment with multiple Convolutional Neural Network architectures
 
 ## Project plan
-1. Using the EuroSat RGB dataset, implement the DenseNet architecture original paper authors in PyTorch as described in their original paper.
+1. Using the EuroSat RGB dataset, implement the DenseNet architecture in PyTorch as described in their original paper. The original model and code are here: https://github.com/liuzhuang13/DenseNet, but this is in lua. We are implementing in Python using PyTorch, so we are using the author's "memory efficient" implementation in Python located here: https://github.com/gpleiss/efficient_densenet_pytorch. 
 
-1. Build, Train, and Test the DenseNet architecture with the EuroSat RGB dataset.
+1. Build, Train, and Test the DenseNet architecture with the EuroSat RGB dataset. The dataset is located here: https://huggingface.co/datasets/blanchon/EuroSAT_RGB.
 
-1. Evaluate the performance of the DenseNet model against the ResNet-50 and GoogLeNet results in the original EuroSat paper. 
+1. Evaluate the performance of the DenseNet model against the ResNet-50 and GoogLeNet results in the original EuroSat paper. The paper is here: https://arxiv.org/abs/1709.00029 and the original EuroSat repo is here: https://github.com/phelber/EuroSAT.
 
 1. Use the same train/test split and other methodological approaches from section IV.A of the paper (e.g., pretrained on ILSVRC-2012). See Tables 2 and 3. Replicate these tables, adding DenseNet to the list.
 
-1. Create slides for presentation (Shorter than paper presentation)
+1. Create slides for presentation (Shorter than paper presentation) per the requirements below.
 
 1. Given enough time, Also implement the "memory efficient" DenseNet.
 
+1. Write individual papers describing contributions and results per the requirements below.
+
+Citations:
+@article{helber2017eurosat,
+   title={EuroSAT: A Novel Dataset and Deep Learning Benchmark for Land Use and Land Cover Classification},
+   author={Helber, et al.},
+   journal={ArXiv preprint arXiv:1709.00029},
+   year={2017}
+}
+
+@inproceedings{DenseNet2017,
+  title={Densely connected convolutional networks},
+  author={Huang, Gao and Liu, Zhuang and van der Maaten, Laurens and Weinberger, Kilian Q },
+  booktitle={Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition},
+  year={2017}
+}
+
+@article{pleiss2017memory,
+  title={Memory-Efficient Implementation of DenseNets},
+  author={Pleiss, Geoff and Chen, Danlu and Huang, Gao and Li, Tongcheng and van der Maaten, Laurens and Weinberger, Kilian Q},
+  journal={arXiv preprint arXiv:1707.06990},
+  year={2017}
+}
 
 ## High level requirements:
 - Use the EuroSat RGB dataset
