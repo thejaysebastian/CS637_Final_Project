@@ -5,11 +5,10 @@ from datasets import load_dataset
 from torch.utils.data import DataLoader
 from torchvision import transforms
 
-def get_dataloaders(config):
-    dataset = load_dataset("blanchon/EuroSAT_RGB")
 
-    transform = transforms.Compose([
-        transforms.Resize((224, 224)),
+def build_transform(image_size):
+    return transforms.Compose([
+        transforms.Resize((image_size, image_size)),
         transforms.ToTensor(),
         transforms.Normalize(
             mean=[0.485, 0.456, 0.406],
@@ -17,11 +16,20 @@ def get_dataloaders(config):
         )
     ])
 
-    def apply_transform(example):
-        example["image"] = transform(example["image"])
-        return example
+class EuroSatTransform:
+    def __init__(self, transform):
+        self.transform = transform
 
-    dataset = dataset.with_transform(apply_transform)
+    def __call__(self, batch):
+        batch["image"] = [self.transform(img) for img in batch["image"]]
+        return batch
+
+def get_dataloaders(config):
+    dataset = load_dataset("blanchon/EuroSAT_RGB")
+
+    transform = build_transform(config["image_size"])
+
+    dataset = dataset.with_transform(EuroSatTransform(transform))
 
     train_loader = DataLoader(
         dataset["train"],

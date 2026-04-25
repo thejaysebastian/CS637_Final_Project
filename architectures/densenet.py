@@ -3,6 +3,8 @@
 
 # Attribution: Memory-efficient DenseNet implementation in PyTorch by the original authors
 # found here: https://github.com/gpleiss/efficient_densenet_pytorch
+# with minor edit to the checkpoint call for future compatibility
+# (I got a UserWarning about future restrictions on the checkpoint call)
 
 # This implementation is based on the DenseNet-BC implementation in torchvision
 # https://github.com/pytorch/vision/blob/master/torchvision/models/densenet.py
@@ -41,7 +43,7 @@ class _DenseLayer(nn.Module):
     def forward(self, *prev_features):
         bn_function = _bn_function_factory(self.norm1, self.relu1, self.conv1)
         if self.efficient and any(prev_feature.requires_grad for prev_feature in prev_features):
-            bottleneck_output = cp.checkpoint(bn_function, *prev_features)
+            bottleneck_output = cp.checkpoint(bn_function, *prev_features, use_reentrant=False)
         else:
             bottleneck_output = bn_function(*prev_features)
         new_features = self.conv2(self.relu2(self.norm2(bottleneck_output)))

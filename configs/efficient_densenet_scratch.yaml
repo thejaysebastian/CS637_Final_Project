@@ -2,6 +2,7 @@
 
 model: efficient_densenet_scratch
 
+image_size: 64
 pretrained: false
 
 learning_rate: 0.001

@@ -6,7 +6,7 @@ from torchvision import models as tv_models
 
 from architectures.densenet import DenseNet # Our densenet.py file from gpleiss
 
-def build_model(model_name, num_classes, pretrained=True):
+def build_model(model_name, num_classes):
     """
     model_name options:
         - efficient_densenet_scratch
@@ -52,4 +52,5 @@ def build_model(model_name, num_classes, pretrained=True):
     else:
         raise ValueError(f"Unknown model: {model_name}")
 
+    print(f"Built model: {model_name}")
     return model

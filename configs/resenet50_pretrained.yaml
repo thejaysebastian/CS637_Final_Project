@@ -2,6 +2,7 @@
 
 model: resnet50_pretrained
 
+image_size: 224
 pretrained: true
 
 learning_rate: 0.0001
