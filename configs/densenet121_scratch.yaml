@@ -1,4 +1,4 @@
-
+# This is the torchvision model that is not pretrained.
 
 model: densenet121_scratch
 

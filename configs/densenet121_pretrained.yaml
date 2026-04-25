@@ -1,3 +1,5 @@
+# This is the pretrained model from torchvision
+
 model: densenet121_pretrained
 
 pretrained: true

@@ -1,3 +1,6 @@
+# Set transforms and other data below to match the EuroSat paper
+
+
 from datasets import load_dataset
 from torch.utils.data import DataLoader
 from torchvision import transforms

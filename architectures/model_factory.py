@@ -1,5 +1,3 @@
-
-
 # The purpose of the model factory is to hide any differences in architectures of the different NNs being tested. It sets parameters based on model selected.
 
 
@@ -11,22 +9,22 @@ from architectures.densenet import DenseNet # Our densenet.py file from gpleiss
 def build_model(model_name, num_classes, pretrained=True):
     """
     model_name options:
-        - efficient_densenet121_scratch
+        - efficient_densenet_scratch
         - densenet121_pretrained
         - densenet121_scratch
         - resnet50_pretrained
         - googlenet_pretrained
     """
     # ---- DenseNet (memory-efficient, from scratch) ----
-    if model_name == "efficient_densenet121_scratch":
+    if model_name == "efficient_densenet_scratch":
         model = DenseNet(
-            growth_rate=32,
-            block_config=(6, 12, 24, 16),
-            num_init_features=64,
-            bn_size=4,
-            drop_rate=0,
-            num_classes=num_classes,
-            efficient=True
+            growth_rate=32, # how many filters to add to each layer (k in paper)
+            block_config=(6, 12, 24, 16), # layers in each pooling block
+            num_init_features=64, # Check to make sure this will work - number of filters to learn in first conv
+            bn_size=4, # multiplicative factor for number of bottleneck layers
+            drop_rate=0, # dropout rate after each dense layer
+            num_classes=num_classes, # 10 classes for EuroSat RGB
+            efficient=True # True if using checkpointing (efficient model)
         )
 
     # ---- Torchvision DenseNet (pretrained) ----

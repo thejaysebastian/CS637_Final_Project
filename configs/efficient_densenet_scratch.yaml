@@ -1,4 +1,4 @@
-# Note: This is the memory-efficient model from gpleiss
+# Note: This is the memory-efficient model from gpleiss, trained from stratch
 
 model: efficient_densenet_scratch
 
