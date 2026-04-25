@@ -1,0 +1,9 @@
+model: densenet
+pretrained: false
+batch_size: 32
+num_workers: 4
+epochs: 50
+learning_rate: 0.001
+optimizer: adam
+criterion: cross_entropy
+device: cuda

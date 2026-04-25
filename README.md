@@ -13,32 +13,51 @@ How does a memory-efficient PyTorch implementation of DenseNet perform on EuroSa
 1. Evaluate the performance of the DenseNet model against the ResNet-50 and GoogLeNet results in the original EuroSat paper. The paper is here: https://arxiv.org/abs/1709.00029 and the original EuroSat repo is here: https://github.com/phelber/EuroSAT.
 
 1. Use the same train/test split and other methodological approaches from section IV.A of the EuroSat paper (e.g., pretrained on ILSVRC-2012). See Tables 2 and 3. Replicate these tables, adding DenseNet to the list.
+    - Track the following: (POSSIBLY):
+        * model
+        * pretrained yes/no
+        * train split
+        * validation split
+        * test split
+        * image size
+        * optimizer
+        * learning rate
+        * epochs
+        * batch size
+        * accuracy
+        * precision
+        * recall
+        * f1
+        * confusion matrix
 
 1. Create slides for presentation (Shorter than paper presentation) per the requirements below.
 
 1. Write individual papers describing contributions and results per the requirements below.
 
 Citations:
-@article{helber2017eurosat,
+```@article{helber2017eurosat,
    title={EuroSAT: A Novel Dataset and Deep Learning Benchmark for Land Use and Land Cover Classification},
    author={Helber, et al.},
    journal={ArXiv preprint arXiv:1709.00029},
    year={2017}
 }
-
+```
+```
 @inproceedings{DenseNet2017,
   title={Densely connected convolutional networks},
   author={Huang, Gao and Liu, Zhuang and van der Maaten, Laurens and Weinberger, Kilian Q },
   booktitle={Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition},
   year={2017}
 }
-
+```
+```
 @article{pleiss2017memory,
   title={Memory-Efficient Implementation of DenseNets},
   author={Pleiss, Geoff and Chen, Danlu and Huang, Gao and Li, Tongcheng and van der Maaten, Laurens and Weinberger, Kilian Q},
   journal={arXiv preprint arXiv:1707.06990},
   year={2017}
 }
+```
 
 ## High level requirements:
 - Use the EuroSat RGB dataset
