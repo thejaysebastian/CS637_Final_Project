@@ -7,7 +7,7 @@
 dataset: eurosat
 
 batch_size: 32
-num_workers: 0 #0 for debugging, otherwise 4
+num_workers: 4 #0 for debugging, otherwise 4
 
 # Training
 epochs: 50
