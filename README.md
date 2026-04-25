@@ -1,6 +1,20 @@
 # CS637_Final_Project
 This project will use the EuroSat RGB dataset to experiment with multiple Convolutional Neural Network architectures
 
+## Project plan
+1. Using the EuroSat RGB dataset, implement the DenseNet architecture original paper authors in PyTorch as described in their original paper.
+
+1. Build, Train, and Test the DenseNet architecture with the EuroSat RGB dataset.
+
+1. Evaluate the performance of the DenseNet model against the ResNet-50 and GoogLeNet results in the original EuroSat paper. 
+
+1. Use the same train/test split and other methodological approaches from section IV.A of the paper (e.g., pretrained on ILSVRC-2012). See Tables 2 and 3. Replicate these tables, adding DenseNet to the list.
+
+1. Create slides for presentation (Shorter than paper presentation)
+
+1. Given enough time, Also implement the "memory efficient" DenseNet.
+
+
 ## High level requirements:
 - Use the EuroSat RGB dataset
 - Create a one-page proposal (Complete)
@@ -20,9 +34,6 @@ This project will use the EuroSat RGB dataset to experiment with multiple Convol
     - Conclusion - Your analysis about the project (such as why we chose the particular architecture, challenges faced while implementing, how I overcame issues, any further improvement possible.
     - Format - no specified format or page limit for the report.
 
-## Possible directions to take
-We need to use the EuroSat RGB dataset.
-Thoughts: 
-- Original proposal said we would build, train, and test a model with EuroSat data. It doesn't say which model. Possible direction:
-    - Implement the DenseNet model from our paper presentation (and/or the more efficient variant). Compare to the ResNet-50 and GoogLeNet results in the original EuroSat paper. Use the same train/test split and other methodological approaches from section IV.A of the paper (e.g., pretrained on ILSVRC-2012). See Tables 2 and 3.
+
+
 
