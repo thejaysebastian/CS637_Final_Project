@@ -2,7 +2,7 @@
 This project will use the EuroSat RGB dataset to experiment with multiple Convolutional Neural Network architectures
 
 ## Project plan
-1. Using the EuroSat RGB dataset, implement the DenseNet architecture in PyTorch as described in their original paper here: http://arxiv.org/abs/1608.06993. The original model and code are here: https://github.com/liuzhuang13/DenseNet. This original implemenation was in lua and not memory efficient, so we are implementing in Python using PyTorch, so we are using the author's "memory efficient" implementation in Python located here: https://github.com/gpleiss/efficient_densenet_pytorch, from the paper located here: https://arxiv.org/pdf/1707.06990.pdf.
+1. Using the EuroSat RGB dataset, implement the DenseNet architecture in PyTorch as described in their original paper here: http://arxiv.org/abs/1608.06993. The original model and code are here: https://github.com/liuzhuang13/DenseNet. This original implemenation was in lua and not memory efficient, so we are implementing the author's "memory efficient" implementation in Python located here: https://github.com/gpleiss/efficient_densenet_pytorch, from the paper located here: https://arxiv.org/pdf/1707.06990.pdf.
 
 1. Build, Train, and Test the DenseNet architecture with the EuroSat RGB dataset. The dataset is located here: https://huggingface.co/datasets/blanchon/EuroSAT_RGB.
 
