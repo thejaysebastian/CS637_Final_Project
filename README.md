@@ -2,17 +2,15 @@
 This project will use the EuroSat RGB dataset to experiment with multiple Convolutional Neural Network architectures
 
 ## Project plan
-1. Using the EuroSat RGB dataset, implement the DenseNet architecture in PyTorch as described in their original paper. The original model and code are here: https://github.com/liuzhuang13/DenseNet, but this is in lua. We are implementing in Python using PyTorch, so we are using the author's "memory efficient" implementation in Python located here: https://github.com/gpleiss/efficient_densenet_pytorch. 
+1. Using the EuroSat RGB dataset, implement the DenseNet architecture in PyTorch as described in their original paper here: http://arxiv.org/abs/1608.06993. The original model and code are here: https://github.com/liuzhuang13/DenseNet. This original implemenation was in lua and not memory efficient, so we are implementing in Python using PyTorch, so we are using the author's "memory efficient" implementation in Python located here: https://github.com/gpleiss/efficient_densenet_pytorch, from the paper located here: https://arxiv.org/pdf/1707.06990.pdf.
 
 1. Build, Train, and Test the DenseNet architecture with the EuroSat RGB dataset. The dataset is located here: https://huggingface.co/datasets/blanchon/EuroSAT_RGB.
 
 1. Evaluate the performance of the DenseNet model against the ResNet-50 and GoogLeNet results in the original EuroSat paper. The paper is here: https://arxiv.org/abs/1709.00029 and the original EuroSat repo is here: https://github.com/phelber/EuroSAT.
 
-1. Use the same train/test split and other methodological approaches from section IV.A of the paper (e.g., pretrained on ILSVRC-2012). See Tables 2 and 3. Replicate these tables, adding DenseNet to the list.
+1. Use the same train/test split and other methodological approaches from section IV.A of the EuroSat paper (e.g., pretrained on ILSVRC-2012). See Tables 2 and 3. Replicate these tables, adding DenseNet to the list.
 
 1. Create slides for presentation (Shorter than paper presentation) per the requirements below.
-
-1. Given enough time, Also implement the "memory efficient" DenseNet.
 
 1. Write individual papers describing contributions and results per the requirements below.
 

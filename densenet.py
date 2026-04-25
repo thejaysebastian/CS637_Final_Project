@@ -1,3 +1,9 @@
+# CS637 Final Project - Application of various DenseNet architectures on EuroSat dataset
+# Group 4 - Jay Sebastian, Mares Zamora
+
+# Attribution: Memory-efficient DenseNet implementation in PyTorch by the original authors
+# found here: https://github.com/gpleiss/efficient_densenet_pytorch
+
 # This implementation is based on the DenseNet-BC implementation in torchvision
 # https://github.com/pytorch/vision/blob/master/torchvision/models/densenet.py
 
