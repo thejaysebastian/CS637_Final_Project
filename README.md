@@ -1,5 +1,9 @@
 # CS637_Final_Project
-This project will use the EuroSat RGB dataset to experiment with multiple Convolutional Neural Network architectures
+This project will use the EuroSat RGB dataset to experiment with the DenseNet architecture.
+
+## Research Question
+
+How does a memory-efficient PyTorch implementation of DenseNet perform on EuroSat RGB land-cover classification compared with the ResNet-50 and GoogLeNet baselines reported in the EuroSat paper?
 
 ## Project plan
 1. Using the EuroSat RGB dataset, implement the DenseNet architecture in PyTorch as described in their original paper here: http://arxiv.org/abs/1608.06993. The original model and code are here: https://github.com/liuzhuang13/DenseNet. This original implemenation was in lua and not memory efficient, so we are implementing the author's "memory efficient" implementation in Python located here: https://github.com/gpleiss/efficient_densenet_pytorch, from the paper located here: https://arxiv.org/pdf/1707.06990.pdf.
