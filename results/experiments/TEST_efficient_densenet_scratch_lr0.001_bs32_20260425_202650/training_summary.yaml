@@ -1,0 +1,7 @@
+best_epoch: 73
+best_val_acc: 0.9833
+final_train_acc: 0.9996
+final_train_loss: 0.0038
+final_val_acc: 0.982
+final_val_loss: 0.0573
+total_epochs: 75

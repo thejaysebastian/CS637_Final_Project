@@ -1,0 +1,2 @@
+Epoch,Train_Loss,Train_Acc,Val_Loss,Val_Acc, Epoch_Time_Sec, Learning_Rate
+1,1.4373,0.4882,1.1935,0.5874,195.15,0.001,

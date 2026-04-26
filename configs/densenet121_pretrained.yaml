@@ -2,7 +2,7 @@
 
 model: densenet121_pretrained
 
-image_size:224
+image_size: 224
 pretrained: true
 
 learning_rate: 0.0001   # lower for fine-tuning

@@ -1,0 +1,10 @@
+avg_epoch_time_sec: 79.34
+best_epoch: 63
+best_val_acc: 0.9822
+final_train_acc: 0.9996
+final_train_loss: 0.004
+final_val_acc: 0.9817
+final_val_loss: 0.0579
+total_epochs: 75
+total_training_time_min: 99.2
+total_training_time_sec: 5951.94
