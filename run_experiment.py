@@ -29,9 +29,7 @@ def main(config_path):
         model_name=config["model"],
         num_classes=len(class_names),
     )
-    
-    
-    
+      
     model = train_model(
         model=model,
         train_loader=train_loader,

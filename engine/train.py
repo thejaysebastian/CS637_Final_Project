@@ -14,6 +14,9 @@ def train_model(model, train_loader, val_loader, config):
     save_dir = f"results/experiments/{config.get('experiment_name', 'default')}"
     os.makedirs(save_dir, exist_ok=True)
     save_path = os.path.join(save_dir, "model.pt")
+    training_start_time = time.time()
+    epoch_times = []
+    
     device = torch.device(config["device"] if torch.cuda.is_available() else "cpu")
     model = model.to(device)
 
@@ -51,7 +54,7 @@ def train_model(model, train_loader, val_loader, config):
     
     try:
         for epoch in range(epochs):
-            start_time = time.time()
+            epoch_start_time = time.time()
             model.train()
 
             running_loss = 0.0
@@ -102,7 +105,9 @@ def train_model(model, train_loader, val_loader, config):
                     best_model_state,
                     os.path.join(save_dir, "best_model.pt")
                 )
-            epoch_time = time.time() - start_time
+            epoch_time = time.time() - epoch_start_time
+            epoch_times.append(epoch_time)
+            
             print(
                 f"[Epoch {epoch+1:03d}/{epochs}] | "
                 f"Epoch time: {epoch_time:.1f}s | "
@@ -131,6 +136,8 @@ def train_model(model, train_loader, val_loader, config):
         # save the model
         torch.save(model.state_dict(), save_path)
         
+        total_training_time_sec = time.time() - training_start_time
+        
         # save config
         with open(os.path.join(save_dir, "config.yaml"), "w") as f:
             yaml.dump(config, f)
@@ -143,11 +150,18 @@ def train_model(model, train_loader, val_loader, config):
             "final_train_loss": round(float(train_loss), 4),
             "final_val_acc": round(float(val_acc), 4),
             "final_val_loss": round(float(val_loss), 4),
-            "total_epochs": epochs
+            "total_epochs": epochs,
+            "total_training_time_sec": round(total_training_time_sec, 2),
+            "total_training_time_min": round(total_training_time_sec / 60, 2),
+            "avg_epoch_time_sec": round(sum(epoch_times) / len(epoch_times), 2),
         }
         
         with open(os.path.join(save_dir, "training_summary.yaml"), "w") as f:
             yaml.dump(summary, f)
+            
+        for file in os.listdir(save_dir):
+            if file.startswith("checkpoint_epoch"):
+                os.remove(os.path.join(save_dir, file))
     
     return model
 

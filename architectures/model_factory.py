@@ -26,7 +26,27 @@ def build_model(model_name, num_classes):
             num_classes=num_classes, # 10 classes for EuroSat RGB
             efficient=True # True if using checkpointing (efficient model)
         )
+    elif model_name == "gpleiss_densenet121_checkpoint": # This is the same model as above. Testing new experiment flow.
+        model = DenseNet(
+            growth_rate=32,
+            block_config=(6, 12, 24, 16),
+            num_init_features=64,
+            bn_size=4,
+            drop_rate=0,
+            num_classes=num_classes,
+            efficient=True
+        )
 
+    elif model_name == "gpleiss_densenet121_standard": # This is the same model as above, but without checkpointing.
+        model = DenseNet(
+            growth_rate=32,
+            block_config=(6, 12, 24, 16),
+            num_init_features=64,
+            bn_size=4,
+            drop_rate=0,
+            num_classes=num_classes,
+            efficient=False
+        )
     # ---- Torchvision DenseNet (pretrained) ----
     elif model_name == "densenet121_pretrained":
         weights = tv_models.DenseNet121_Weights.DEFAULT

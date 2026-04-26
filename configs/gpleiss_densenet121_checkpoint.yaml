@@ -1,0 +1,14 @@
+# Note: This is the memory-efficient model from gpleiss, trained from scratch
+
+model: gpleiss_densenet121_checkpoint
+
+image_size: 64
+pretrained: false
+
+learning_rate: 0.001
+epochs: 75
+
+# testing overrides below. Comment out any conflicting lines above, and uncomment all below to test a small run:
+# epochs: 1
+# batch_size: 4
+# num_workers: 0
