@@ -6,8 +6,8 @@ import sys
 import datetime
 
 configs = [
-    "configs/gpleiss_densenet121_checkpoint.yaml",
     "configs/gpleiss_densenet121_standard.yaml",
+    "configs/gpleiss_densenet121_checkpoint.yaml",
     "configs/densenet121_scratch.yaml",
     "configs/densenet121_pretrained.yaml",
     "configs/resnet50_pretrained.yaml",
