@@ -137,7 +137,7 @@ def train_model(model, train_loader, val_loader, config):
                     f"{epoch_time:.2f},"
                     f"{current_lr},\n"
                 )
-            f.flush()  # Ensure data is written to disk
+                f.flush()  # Ensure data is written to disk
             
             #periodic checkpoints per 5 epochs.
             if (epoch + 1) % 5 == 0:

@@ -5,8 +5,8 @@
 # golden_run: false
 # notes: "This is a test run for debugging purposes. The results will not be used for final evaluation."
 
-# golden_run: true
-# notes: "This is a golden run for final evaluation. The results will be used for final evaluation and comparison with other models."
+golden_run: true
+notes: "This is a golden run for final evaluation. The results will be used for final evaluation and comparison with other models."
 
 #! THE BELOW SHOULD NOT CHANGE ONCE VERIFIED
 # However, we can override what needs to be overridden in each model YAML.

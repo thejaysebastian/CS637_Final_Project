@@ -24,7 +24,7 @@ def build_model(model_name, num_classes):
             bn_size=4, # multiplicative factor for number of bottleneck layers
             drop_rate=0, # dropout rate after each dense layer
             num_classes=num_classes, # 10 classes for EuroSat RGB
-            efficient=True # True if using checkpointing (efficient model)
+            efficient=False # True if using checkpointing (efficient model)
         )
     elif model_name == "gpleiss_densenet121_checkpoint": # This is the same model as above. Testing new experiment flow.
         model = DenseNet(

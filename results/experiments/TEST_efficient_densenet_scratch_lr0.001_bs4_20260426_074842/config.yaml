@@ -1,0 +1,17 @@
+batch_size: 4
+criterion: cross_entropy
+dataset: eurosat
+device: cuda
+epochs: 1
+experiment_name: TEST_efficient_densenet_scratch_lr0.001_bs4_20260426_074842
+gamma: 0.1
+image_size: 64
+learning_rate: 0.001
+model: efficient_densenet_scratch
+num_workers: 0
+optimizer: adam
+pretrained: false
+scheduler: step
+seed: 42
+step_size: 20
+weight_decay: 0.0001
