@@ -6,9 +6,9 @@ image_size: 64
 pretrained: false
 
 learning_rate: 0.001
-#epochs: 75
+epochs: 75
 
 # testing overrides below. Comment out any conflicting lines above, and uncomment all below to test a small run:
-epochs: 1
-batch_size: 4
-num_workers: 0
+# epochs: 1
+# batch_size: 4
+# num_workers: 0

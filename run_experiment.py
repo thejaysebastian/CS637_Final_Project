@@ -6,6 +6,8 @@ from engine.train import train_model
 from engine.evaluate import evaluate_model
 from utils.config import load_config
 import datetime
+import os
+import json
 
 
 def main(config_path):
@@ -13,19 +15,23 @@ def main(config_path):
     if "experiment_name" not in config:
         timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
         config["experiment_name"] = (
-            f"{config['model']}_lr{config['learning_rate']}_bs{config['batch_size']}_{timestamp}"
+            f"GOLDEN_{config['model']}_lr{config['learning_rate']}_bs{config['batch_size']}_{timestamp}"
+            if "golden_run" in config and config["golden_run"]
+            else f"TEST_{config['model']}_lr{config['learning_rate']}_bs{config['batch_size']}_{timestamp}"
         )
     
     train_loader, val_loader, test_loader, class_names = get_dataloaders(config)
 
-    print(config)
-    print(class_names)
+    print(f"\nExperiment: {config['experiment_name']}")
+    print(f"Initiating loading and learning of {config['dataset']} into {config['model']}....")
     
     model = build_model(
         model_name=config["model"],
         num_classes=len(class_names),
     )
-
+    
+    
+    
     model = train_model(
         model=model,
         train_loader=train_loader,
@@ -40,8 +46,13 @@ def main(config_path):
         config=config
     )
 
-
     print(results)
+    
+    save_dir = f"results/experiments/{config['experiment_name']}"
+    os.makedirs(save_dir, exist_ok=True)
+    
+    with open(os.path.join(save_dir, "results.json"), "w") as f:
+        json.dump(results, f, indent=4)
     
 if __name__ == "__main__":
     import argparse

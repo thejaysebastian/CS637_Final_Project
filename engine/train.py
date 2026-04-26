@@ -3,6 +3,7 @@
 # This handles optimization only
 
 import os
+import time
 import yaml
 import copy
 import torch
@@ -10,7 +11,7 @@ import torch.nn as nn
 import torch.optim as optim
 
 def train_model(model, train_loader, val_loader, config):
-    save_dir = f"results/{config.get('experiment_name', 'default')}"
+    save_dir = f"results/experiments/{config.get('experiment_name', 'default')}"
     os.makedirs(save_dir, exist_ok=True)
     save_path = os.path.join(save_dir, "model.pt")
     device = torch.device(config["device"] if torch.cuda.is_available() else "cpu")
@@ -46,9 +47,11 @@ def train_model(model, train_loader, val_loader, config):
     best_model_state = None
 
     epochs = config.get("epochs", 50)
-
+    best_epoch = 0
+    
     try:
         for epoch in range(epochs):
+            start_time = time.time()
             model.train()
 
             running_loss = 0.0
@@ -92,19 +95,22 @@ def train_model(model, train_loader, val_loader, config):
             if val_acc > best_val_acc:
                 best_val_acc = val_acc
                 best_model_state = copy.deepcopy(model.state_dict())
+                best_epoch = epoch + 1
                 
                 # save the model if it's the best so far, overwriting the last one
                 torch.save(
                     best_model_state,
                     os.path.join(save_dir, "best_model.pt")
                 )
-
+            epoch_time = time.time() - start_time
             print(
-                f"Epoch [{epoch + 1}/{epochs}] "
-                f"Train Loss: {train_loss:.4f} "
-                f"Train Acc: {train_acc:.4f} "
-                f"Val Loss: {val_loss:.4f} "
-                f"Val Acc: {val_acc:.4f}"
+                f"[Epoch {epoch+1:03d}/{epochs}] | "
+                f"Epoch time: {epoch_time:.1f}s | "
+                f"Train Loss: {train_loss:.4f} | "
+                f"Train Acc: {train_acc:.4f} || "
+                f"Val Loss: {val_loss:.4f} | "
+                f"Val Acc: {val_acc:.4f} | "
+                f"Best: {best_val_acc:.4f}"
             )
             
             #periodic checkpoints per 5 epochs.
@@ -130,13 +136,25 @@ def train_model(model, train_loader, val_loader, config):
             yaml.dump(config, f)
         
         # save summary
+        summary = {
+            "best_val_acc": round(float(best_val_acc), 4),
+            "best_epoch": best_epoch,
+            "final_train_acc": round(float(train_acc), 4),
+            "final_train_loss": round(float(train_loss), 4),
+            "final_val_acc": round(float(val_acc), 4),
+            "final_val_loss": round(float(val_loss), 4),
+            "total_epochs": epochs
+        }
+        
         with open(os.path.join(save_dir, "training_summary.yaml"), "w") as f:
-            yaml.dump({"best_val_acc": float(best_val_acc)}, f)
+            yaml.dump(summary, f)
     
     return model
 
 
 def validate_model(model, val_loader, criterion, device):
+    print("Running validation...")
+    
     model.eval()
 
     running_loss = 0.0
