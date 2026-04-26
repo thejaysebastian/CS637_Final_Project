@@ -2,6 +2,8 @@
 Jay_notes.md
 OLD_README.md
 
+# Large models
+*.pt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

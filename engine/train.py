@@ -12,8 +12,14 @@ import torch.optim as optim
 
 def train_model(model, train_loader, val_loader, config):
     save_dir = f"results/experiments/{config.get('experiment_name', 'default')}"
+    
     os.makedirs(save_dir, exist_ok=True)
-    save_path = os.path.join(save_dir, "model.pt")
+    save_path = os.path.join(save_dir, "final_model.pt")
+    log_path = os.path.join(save_dir, "epoch_log.csv")
+    
+    with open(log_path, "w") as f:
+        f.write("Epoch,Train_Loss,Train_Acc,Val_Loss,Val_Acc, Epoch_Time_Sec, Learning_Rate\n")
+
     training_start_time = time.time()
     epoch_times = []
     
@@ -91,6 +97,7 @@ def train_model(model, train_loader, val_loader, config):
             train_acc = correct / total
 
             val_loss, val_acc = validate_model(model, val_loader, criterion, device)
+            current_lr = optimizer.param_groups[0]['lr']
 
             if scheduler is not None:
                 scheduler.step()
@@ -108,6 +115,7 @@ def train_model(model, train_loader, val_loader, config):
             epoch_time = time.time() - epoch_start_time
             epoch_times.append(epoch_time)
             
+            # Print epoch results to console
             print(
                 f"[Epoch {epoch+1:03d}/{epochs}] | "
                 f"Epoch time: {epoch_time:.1f}s | "
@@ -117,6 +125,19 @@ def train_model(model, train_loader, val_loader, config):
                 f"Val Acc: {val_acc:.4f} | "
                 f"Best: {best_val_acc:.4f}"
             )
+            
+            # Log epoch results to CSV
+            with open(log_path, "a") as f:
+                f.write(
+                    f"{epoch+1},"
+                    f"{train_loss:.4f},"
+                    f"{train_acc:.4f},"
+                    f"{val_loss:.4f},"
+                    f"{val_acc:.4f},"
+                    f"{epoch_time:.2f},"
+                    f"{current_lr},\n"
+                )
+            f.flush()  # Ensure data is written to disk
             
             #periodic checkpoints per 5 epochs.
             if (epoch + 1) % 5 == 0:
