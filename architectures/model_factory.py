@@ -67,7 +67,11 @@ def build_model(model_name, num_classes):
     # ---- GoogLeNet (pretrained) ----
     elif model_name == "googlenet_pretrained":
         weights = tv_models.GoogLeNet_Weights.DEFAULT
-        model = tv_models.googlenet(weights=weights, aux_logits=False)
+        model = tv_models.googlenet(weights=weights, aux_logits=True)
+        model.aux_logits = False
+        model.aux1 = None
+        model.aux2 = None
+
         model.fc = nn.Linear(model.fc.in_features, num_classes)
     else:
         raise ValueError(f"Unknown model: {model_name}")
