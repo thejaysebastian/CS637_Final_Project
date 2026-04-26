@@ -51,7 +51,7 @@ def main(config_path):
     save_dir = f"results/experiments/{config['experiment_name']}"
     os.makedirs(save_dir, exist_ok=True)
     
-    with open(os.path.join(save_dir, "results.json"), "w") as f:
+    with open(os.path.join(save_dir, "metrics.json"), "w") as f:
         json.dump(results, f, indent=4)
     
 if __name__ == "__main__":
