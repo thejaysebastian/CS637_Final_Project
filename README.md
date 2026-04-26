@@ -211,6 +211,9 @@ CS637_Final_Project/
 
 **Classes:** Annual Crop · Forest · Herbaceous Vegetation · Highway · Industrial Buildings · Pasture · Permanent Crop · Residential Buildings · River · Sea/Lake
 
+![EuroSAT RGB class samples](assets/eurosat_class_samples.png)
+*Sample images for each of the 10 EuroSAT RGB land-cover classes. Green borders indicate consistently high-performing classes; red borders indicate consistently lower-performing classes across all models.*
+
 **Preprocessing:** Images are normalized using ImageNet statistics (`mean=[0.485, 0.456, 0.406]`, `std=[0.229, 0.224, 0.225]`). Models trained from scratch on 64×64 inputs receive no resizing. ImageNet-pretrained models receive images resized to 224×224 to match their expected input distribution.
 
 **Split note:** The Hugging Face split (60/20/20) may differ from the split used in the original EuroSAT paper. Results are presented as "DenseNet under comparable conditions" rather than a strict replication.
@@ -244,40 +247,59 @@ The gpleiss DenseNet uses an ImageNet-style stem (`7×7 conv, stride 2` → `3×
 
 ## Results
 
-> Results will be updated upon completion of all six experimental runs.
+All six models were trained and evaluated on the EuroSAT RGB test set (5,400 images). Hardware: NVIDIA GeForce RTX 4070, 12 GB VRAM, Windows 11. Optimizer: Adam, seed: 42.
 
 ### Summary table
 
+Models sorted by F1 (macro).
+
 | Model | Implementation | Pretrained | Image Size | Accuracy | Precision | Recall | F1 (macro) | Train Time (min) |
 |---|---|---|---|---|---|---|---|---|
-| gpleiss DenseNet-121 (checkpoint) | gpleiss | No | 64×64 | — | — | — | — | — |
-| gpleiss DenseNet-121 (standard) | gpleiss | No | 64×64 | — | — | — | — | — |
-| DenseNet-121 scratch | torchvision | No | 64×64 | — | — | — | — | — |
-| DenseNet-121 pretrained | torchvision | Yes | 224×224 | — | — | — | — | — |
-| ResNet-50 pretrained | torchvision | Yes | 224×224 | — | — | — | — | — |
-| GoogLeNet pretrained | torchvision | Yes | 224×224 | — | — | — | — | — |
+| DenseNet-121 pretrained | torchvision | Yes | 224×224 | **98.96%** | 98.94% | 98.92% | **98.92%** | 37.89 |
+| GoogLeNet pretrained | torchvision | Yes | 224×224 | 98.81% | 98.82% | 98.75% | 98.78% | 18.71 |
+| ResNet-50 pretrained | torchvision | Yes | 224×224 | 98.75% | 98.75% | 98.73% | 98.73% | 35.79 |
+| gpleiss DenseNet-121 (checkpoint) | gpleiss | No | 64×64 | 98.17% | 98.17% | 98.11% | 98.14% | 112.32 |
+| gpleiss DenseNet-121 (standard) | gpleiss | No | 64×64 | 97.81% | 97.85% | 97.72% | 97.77% | 99.72 |
+| DenseNet-121 scratch | torchvision | No | 64×64 | 96.24% | 96.23% | 96.15% | 96.19% | 40.62 |
 
 ### Checkpointing comparison
 
-| Model | Accuracy | F1 (macro) | Avg Epoch Time (s) | Total Time (min) |
-|---|---|---|---|---|
-| gpleiss DenseNet-121 (checkpoint ON) | — | — | — | — |
-| gpleiss DenseNet-121 (checkpoint OFF) | — | — | — | — |
+Same gpleiss DenseNet-121 architecture — only the `efficient` flag differs.
+
+| Model | Accuracy | F1 (macro) | Best Epoch | Avg Epoch Time (s) | Total Time (min) |
+|---|---|---|---|---|---|
+| gpleiss DenseNet-121 (checkpoint ON) | 98.17% | 98.14% | 30 | 89.84 | 112.32 |
+| gpleiss DenseNet-121 (checkpoint OFF) | 97.81% | 97.77% | 37 | 79.76 | 99.72 |
+
+Checkpointing adds approximately 12.6% training overhead (10.08 s/epoch, 12.6 min total) with no meaningful improvement in classification performance. This indicates that gradient checkpointing provides no practical benefit on hardware with sufficient VRAM for this task.
+
+### Pretraining effect — DenseNet-121
+
+Same torchvision implementation, identical architecture.
+
+| Model | Pretrained | Image Size | Epochs | Accuracy | F1 (macro) | Best Epoch | Train Time (min) |
+|---|---|---|---|---|---|---|---|
+| DenseNet-121 pretrained | Yes (ImageNet) | 224×224 | 30 | 98.96% | 98.92% | 26 | 37.89 |
+| DenseNet-121 scratch | No | 64×64 | 75 | 96.24% | 96.19% | 28 | 40.62 |
+
+ImageNet pretraining yields a 2.73% improvement in F1, converges in 30 epochs versus 75, and does so in comparable wall-clock time.
 
 ### Per-class F1 scores
 
-| Class | gpleiss standard | DenseNet-121 scratch | DenseNet-121 pretrained | ResNet-50 | GoogLeNet |
-|---|---|---|---|---|---|
-| Annual Crop | — | — | — | — | — |
-| Forest | — | — | — | — | — |
-| Herbaceous Vegetation | — | — | — | — | — |
-| Highway | — | — | — | — | — |
-| Industrial Buildings | — | — | — | — | — |
-| Pasture | — | — | — | — | — |
-| Permanent Crop | — | — | — | — | — |
-| Residential Buildings | — | — | — | — | — |
-| River | — | — | — | — | — |
-| Sea/Lake | — | — | — | — | — |
+| Class | DN-121 pretrained | GoogLeNet | ResNet-50 | gpleiss checkpoint | gpleiss standard | DN-121 scratch |
+|---|---|---|---|---|---|---|
+| Annual Crop | 0.989 | 0.987 | 0.970 | 0.980 | 0.970 | 0.953 |
+| Forest | **0.997** | 0.995 | 0.994 | 0.996 | 0.994 | 0.981 |
+| Herbaceous Vegetation | 0.981 | 0.975 | 0.963 | 0.982 | 0.963 | 0.925 |
+| Highway | 0.990 | 0.994 | 0.980 | 0.985 | 0.980 | 0.961 |
+| Industrial Buildings | 0.994 | 0.992 | 0.981 | 0.990 | 0.981 | 0.980 |
+| Pasture | 0.980 | 0.976 | 0.971 | 0.985 | 0.971 | 0.947 |
+| Permanent Crop | 0.976 | 0.977 | 0.954 | 0.980 | 0.954 | 0.930 |
+| Residential Buildings | **0.996** | 0.995 | 0.991 | 0.994 | 0.991 | 0.990 |
+| River | 0.992 | 0.991 | 0.982 | 0.984 | 0.982 | 0.966 |
+| Sea/Lake | **0.997** | 0.996 | 0.992 | 0.993 | 0.992 | 0.986 |
+
+Forest, Sea/Lake, and Residential Buildings are the highest-performing classes across all models. Permanent Crop and Herbaceous Vegetation are the lowest-performing classes in every model, reflecting visual similarity between crop and vegetation land-cover types rather than any architectural weakness.
 
 ---
 
