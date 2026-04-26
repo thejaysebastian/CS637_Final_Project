@@ -1,12 +1,17 @@
-# CS637 Final Project: DenseNet Architecture Evaluation on EuroSAT
+# CS637 Final Project: DenseNet on EuroSAT RGB
 
-A comprehensive study evaluating DenseNet architecture for land-cover classification on the EuroSAT RGB dataset, comparing against ResNet-50 and GoogLeNet baselines.
+A multi-axis experimental evaluation of DenseNet for land-cover classification on the EuroSAT RGB dataset, comparing implementation efficiency, the effect of ImageNet pretraining, and performance against the ResNet-50 and GoogLeNet baselines from the original EuroSAT paper.
+
+## Authors
+
+Jay Sebastian ([@thejaysebastian](https://github.com/thejaysebastian)) · Mares Zamora ([@siroceans](https://github.com/siroceans))
+
+---
 
 ## Table of Contents
 
-- [Overview](#overview)
-- [Research Question](#research-question)
-- [Key Features](#key-features)
+- [Research Questions](#research-questions)
+- [Experimental Design](#experimental-design)
 - [Quick Start](#quick-start)
 - [Installation](#installation)
 - [Usage](#usage)
@@ -14,311 +19,294 @@ A comprehensive study evaluating DenseNet architecture for land-cover classifica
 - [Dataset](#dataset)
 - [Model Variants](#model-variants)
 - [Results](#results)
+- [Methodology Notes](#methodology-notes)
 - [References](#references)
-- [Contributing](#contributing)
 
-## Overview
+---
 
-This project implements and evaluates a memory-efficient PyTorch implementation of DenseNet on the EuroSAT RGB dataset for 10-class land-cover classification. It explores three key aspects of DenseNet performance:
+## Research Questions
 
-1. **Memory-efficient implementation** - The impact of PyTorch checkpointing on training efficiency
-2. **Transfer learning effectiveness** - Pre-training on ImageNet versus training from scratch
-3. **Competitive comparison** - Performance against established baselines (ResNet-50, GoogLeNet)
+This project addresses three experimental axes:
 
-The project follows the experimental methodology from the original EuroSAT paper to ensure fair architectural comparison.
+1. **Implementation efficiency** — Does gradient checkpointing in the memory-efficient DenseNet implementation affect classification performance, and what is the computational cost?
+2. **Pretraining effect** — How much does ImageNet pretraining improve DenseNet performance on EuroSAT compared to training from scratch?
+3. **Architecture comparison** — How does DenseNet perform against the ResNet-50 and GoogLeNet baselines reported in the original EuroSAT paper?
 
-## Research Question
+---
 
-**How does a memory-efficient PyTorch implementation of DenseNet perform on EuroSAT RGB land-cover classification compared with the ResNet-50 and GoogLeNet baselines reported in the EuroSat paper?**
+## Experimental Design
 
-This research question is addressed through systematic experiments that isolate and evaluate:
-- Architectural differences between DenseNet and competing models
-- The effect of ImageNet pre-training
-- The computational efficiency of the memory-optimized implementation
+Six models are evaluated in total. Each experiment is controlled for dataset, preprocessing, optimizer, and random seed. The only variables changed between experiments are the model architecture, implementation, and pretraining status.
 
-## Key Features
+| Model | Implementation | Pretraining | Image Size | Purpose |
+|---|---|---|---|---|
+| `gpleiss_densenet121_checkpoint` | gpleiss | None | 64×64 | Checkpointing ON — memory-efficient variant |
+| `gpleiss_densenet121_standard` | gpleiss | None | 64×64 | Checkpointing OFF — isolates checkpointing overhead |
+| `densenet121_scratch` | torchvision | None | 64×64 | Architecture baseline, no transfer learning |
+| `densenet121_pretrained` | torchvision | ImageNet | 224×224 | Best-case DenseNet with transfer learning |
+| `resnet50_pretrained` | torchvision | ImageNet | 224×224 | EuroSAT paper baseline |
+| `googlenet_pretrained` | torchvision | ImageNet | 224×224 | EuroSAT paper baseline |
 
-- **Memory-Efficient DenseNet**: Implementation using PyTorch checkpointing (reduces memory from quadratic to linear at ~15-20% training cost)
-- **Multiple Model Variants**: Direct comparison between memory-efficient, standard, and pre-trained DenseNet implementations
-- **Comprehensive Evaluation**: Tracks accuracy, precision, recall, F1-score, and confusion matrices
-- **Configuration-Driven**: YAML-based experiment configuration for easy parameter management
-- **Reproducible**: Fixed random seeds and documented training protocols
-- **Dataset**: 27,000 hand-labeled RGB satellite images across 10 land-cover classes
+**Note on the gpleiss vs. torchvision comparison:** The two DenseNet-121 implementations share the same block configuration `(6, 12, 24, 16)`, growth rate `32`, and initial features `64`, but are independent codebases. Comparisons between them should be interpreted as implementation-level comparisons rather than exact architecture-matched comparisons.
+
+---
 
 ## Quick Start
 
 ### Prerequisites
 
 - Python 3.9+
-- CUDA 11.8+ (for GPU acceleration)
-- 8+ GB RAM (16+ GB recommended for training)
+- CUDA 11.8+ recommended
+- 16 GB RAM recommended for training
 
 ### Installation
 
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd CS637_Final_Project
-   ```
-
-2. **Create a virtual environment**
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   ```
-
-3. **Install dependencies**
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-4. **Verify GPU support (optional)**
-   ```bash
-   python -c "import torch; print(torch.cuda.is_available())"
-   ```
-
-### First Experiment
-
-Run a quick experiment with the memory-efficient DenseNet:
-
 ```bash
-python run_experiment.py --config configs/efficient_densenet_scratch.yaml
+git clone <repository-url>
+cd CS637_Final_Project
+python -m venv venv
+source venv/bin/activate        # Windows: venv\Scripts\activate
+pip install -r requirements.txt
 ```
 
-Expected output:
-- Progress updates during training
-- Model checkpoint saved to `results/`
-- Final evaluation metrics and training summary
+Verify GPU access:
+
+```bash
+python -c "import torch; print(torch.cuda.is_available())"
+```
+
+### Run a single experiment
+
+```bash
+python run_experiment.py --config configs/gpleiss_densenet121_standard.yaml
+```
+
+### Run all experiments sequentially
+
+```bash
+python run_all.py
+```
+
+This runs all six model configurations in sequence and prints total elapsed time on completion.
+
+---
 
 ## Usage
 
-### Running Experiments
+### Running experiments
 
-All experiments are configured via YAML files in the `configs/` directory. Each config file overrides base parameters.
+All experiments are driven by YAML config files. Each model config overrides only the parameters that differ from `configs/base.yaml`.
 
-**Run a specific model configuration:**
 ```bash
 python run_experiment.py --config configs/<model_config>.yaml
 ```
 
-**Available model configurations:**
-```bash
-# DenseNet variants
-python run_experiment.py --config configs/efficient_densenet_scratch.yaml
-python run_experiment.py --config configs/densenet121_scratch.yaml
-python run_experiment.py --config configs/densenet121_pretrained.yaml
+### Running multiple experiments
 
-# Baseline models (optional)
-python run_experiment.py --config configs/resenet50_pretrained.yaml
-python run_experiment.py --config configs/googlenet_pretrained.yaml
+Use `run_all.py` to queue all six experiments sequentially:
+
+```bash
+python run_all.py
 ```
 
-### Configuration Options
+Or use `run_gpleiss_all.py` to run only the two gpleiss DenseNet variants:
 
-Edit `configs/base.yaml` for global defaults, or create model-specific YAML files to override parameters:
+```bash
+python run_gpleiss_all.py
+```
+
+### Configuration
+
+Edit `configs/base.yaml` for shared defaults. Override per-experiment parameters in the individual model YAML files.
+
+Key base parameters:
 
 ```yaml
-# Data
-dataset: eurosat          # Dataset name
-batch_size: 32           # Training batch size
-num_workers: 4           # Data loader workers
-
-# Training
-epochs: 50               # Number of training epochs
-learning_rate: 0.001     # Initial learning rate
-optimizer: adam          # Optimizer choice
-weight_decay: 0.0001     # L2 regularization
-
-# Scheduler
-scheduler: step          # Learning rate schedule
-step_size: 20            # Decay every N epochs
-gamma: 0.1               # Decay factor
-
-# Loss and device
-criterion: cross_entropy  # Loss function
-device: cuda             # 'cuda' or 'cpu'
-seed: 42                 # Random seed for reproducibility
+dataset: eurosat
+batch_size: 32
+num_workers: 4
+epochs: 50
+learning_rate: 0.001
+optimizer: adam
+weight_decay: 0.0001
+scheduler: step
+step_size: 20
+gamma: 0.1
+criterion: cross_entropy
+device: cuda
+seed: 42
 ```
 
-### Output Structure
+### Output structure
 
-Each experiment creates timestamped results in `results/`:
+Each experiment produces a timestamped folder under `results/experiments/`:
 
 ```
-results
-├── experiments/
-│   └── <model>_lr<lr>_bs<bs>_<timestamp>/
-│       ├── best_model.pt          # Best model weights
-│       ├── config.yaml            # Experiment configuration
-│       ├── training_summary.yaml  # Final metrics and training log
-│       └── checkpoint_epoch_*.pt  # Periodic checkpoints
-│
-└── logs/
-    └── <experiment_name>/     # TensorBoard logs (if enabled)
+results/
+└── experiments/
+    └── GOLDEN_<model>_lr<lr>_bs<bs>_<timestamp>/
+        ├── best_model.pt           # Weights at best validation accuracy
+        ├── final_model.pt          # Weights at final epoch
+        ├── config.yaml             # Exact config used for this run
+        ├── training_summary.yaml   # Best epoch, final loss/acc, timing
+        ├── epoch_log.csv           # Per-epoch loss, accuracy, LR, time
+        └── metrics.json            # Test accuracy, precision, recall, F1,
+                                    # confusion matrix, per-class report
 ```
+
+---
 
 ## Project Structure
 
 ```
 CS637_Final_Project/
-├── README.md                    # This file
-├── requirements.txt             # Python dependencies
-├── run_experiment.py            # Main experiment runner
+├── README.md
+├── requirements.txt
+├── run_experiment.py           # Main experiment driver
+├── run_all.py                  # Sequential batch runner (all 6 models)
+├── run_gpleiss_all.py          # Sequential batch runner (gpleiss variants only)
 │
 ├── architectures/
-│   ├── densenet.py             # Memory-efficient DenseNet implementation
-│   └── model_factory.py        # Model builder with all variants
+│   ├── densenet.py             # Memory-efficient DenseNet (gpleiss implementation)
+│   └── model_factory.py        # Unified model builder for all variants
 │
 ├── configs/
-│   ├── base.yaml               # Base configuration
-│   ├── efficient_densenet_scratch.yaml
-│   ├── densenet121_scratch.yaml
-│   ├── densenet121_pretrained.yaml
-│   ├── resenet50_pretrained.yaml
-│   └── googlenet_pretrained.yaml
+│   ├── base.yaml                           # Shared defaults
+│   ├── gpleiss_densenet121_checkpoint.yaml # gpleiss, efficient=True
+│   ├── gpleiss_densenet121_standard.yaml   # gpleiss, efficient=False
+│   ├── densenet121_scratch.yaml            # torchvision, no pretraining
+│   ├── densenet121_pretrained.yaml         # torchvision, ImageNet pretrained
+│   ├── resnet50_pretrained.yaml            # ResNet-50, ImageNet pretrained
+│   └── googlenet_pretrained.yaml           # GoogLeNet, ImageNet pretrained
 │
 ├── data/
-│   └── eurosat.py              # EuroSAT dataset loader
+│   └── eurosat.py              # EuroSAT dataset loader and transforms
 │
 ├── engine/
-│   ├── train.py                # Training loop
-│   ├── evaluate.py             # Evaluation and metrics
-│   └── metrics.py              # Metric computations
+│   ├── train.py                # Training loop, checkpointing, logging
+│   ├── evaluate.py             # Test set evaluation
+│   └── metrics.py              # Accuracy, precision, recall, F1, confusion matrix
 │
 ├── utils/
-│   └── config.py               # Configuration utilities
+│   └── config.py               # YAML config loader with base/override merging
 │
-└── results/                     # Experiment outputs (generated)
-    ├── checkpoints/
-    ├── logs/
-    └── tables/
+└── results/                    # Generated at runtime — not committed
+    └── experiments/
 ```
+
+---
 
 ## Dataset
 
-### EuroSAT RGB
+**EuroSAT RGB** — 27,000 hand-labeled satellite images across 10 land-cover classes.
 
-**Source**: [Hugging Face Datasets](https://huggingface.co/datasets/blanchon/EuroSAT_RGB)
+| Property | Value |
+|---|---|
+| Source | [Hugging Face: blanchon/EuroSAT_RGB](https://huggingface.co/datasets/blanchon/EuroSAT_RGB) |
+| Image size | 64×64 pixels, 3-channel RGB |
+| Classes | 10 |
+| Train split | 16,200 images (60%) |
+| Validation split | 5,400 images (20%) |
+| Test split | 5,400 images (20%) |
 
-**Specifications**:
-- **Total Images**: 27,000 hand-labeled RGB satellite images
-- **Resolution**: 64×64 pixels
-- **Bands**: 3 (RGB)
-- **Classes**: 10 land-cover types
-  - Annual Crop
-  - Forest
-  - Herbaceous Vegetation
-  - Highway
-  - Industrial Buildings
-  - Pasture
-  - Permanent Crop
-  - Residential Buildings
-  - River
-  - Sea/Lake
+**Classes:** Annual Crop · Forest · Herbaceous Vegetation · Highway · Industrial Buildings · Pasture · Permanent Crop · Residential Buildings · River · Sea/Lake
 
-**Split**: 
-- Train: 16,200 (60%)
-- Validation: 5,400 (20%)
-- Test: 5,400 (20%)
+**Preprocessing:** Images are normalized using ImageNet statistics (`mean=[0.485, 0.456, 0.406]`, `std=[0.229, 0.224, 0.225]`). Models trained from scratch on 64×64 inputs receive no resizing. ImageNet-pretrained models receive images resized to 224×224 to match their expected input distribution.
 
-### Data Loading
+**Split note:** The Hugging Face split (60/20/20) may differ from the split used in the original EuroSAT paper. Results are presented as "DenseNet under comparable conditions" rather than a strict replication.
 
-The dataset is automatically downloaded and cached by the `data/eurosat.py` module on first run.
+---
 
 ## Model Variants
 
-This project evaluates three primary DenseNet configurations plus optional baselines:
+### DenseNet architecture details
 
-### Primary Experiments
+All DenseNet variants use the DenseNet-121 block configuration:
 
-| Model | Architecture | Pre-training | Purpose |
-|-------|--------------|--------------|---------|
-| `efficient_densenet_scratch` | DenseNet (memory-optimized) | None | Tests PyTorch checkpointing efficiency |
-| `densenet121_scratch` | DenseNet-121 (standard) | None | Baseline: architecture without transfer learning |
-| `densenet121_pretrained` | DenseNet-121 (standard) | ImageNet | Best-case performance: transfer learning |
+| Parameter | Value |
+|---|---|
+| Growth rate (k) | 32 |
+| Block config | (6, 12, 24, 16) |
+| Initial features | 64 |
+| Bottleneck size | 4 |
+| Dropout | 0.0 |
+| Classes | 10 |
 
-### Baseline Models (Optional)
+### Gradient checkpointing
 
-| Model | Architecture | Pre-training | Purpose |
-|-------|--------------|--------------|---------|
-| `resnet50_pretrained` | ResNet-50 | ImageNet | EuroSAT baseline from original paper |
-| `googlenet_pretrained` | GoogLeNet | ImageNet | EuroSAT baseline from original paper |
+The gpleiss implementation supports an `efficient` flag that enables gradient checkpointing. When `efficient=True`, intermediate feature maps are discarded during the forward pass and recomputed during backpropagation. This reduces memory consumption from O(L²) to O(L) at the cost of additional compute time. One of the goals of this project is to quantify that tradeoff on the EuroSAT task with the available hardware (NVIDIA RTX 4070, 12 GB VRAM).
 
-### DenseNet Architecture Details
+### Small input stem
 
-**Efficient DenseNet (gpleiss)**:
-- Growth rate (k): 32
-- Blocks: [6, 12, 24, 16] (DenseNet-121 equivalent)
-- Initial features: 64
-- Bottleneck size: 4
-- Dropout: 0.0
-- Checkpointing: Enabled (memory-efficient)
+The gpleiss DenseNet uses an ImageNet-style stem (`7×7 conv, stride 2` → `3×3 maxpool, stride 2`), which downsamples 64×64 inputs to 16×16 before the first dense block. This is consistent with the torchvision DenseNet-121 stem and keeps the two implementations comparable, but it is worth noting that this stem was designed for larger ImageNet inputs.
+
+---
 
 ## Results
 
-Experiment results are automatically saved with comprehensive metrics:
+> Results will be updated upon completion of all six experimental runs.
 
-- **Training Summary**: `training_summary.yaml` contains:
-  - Best validation accuracy and epoch
-  - Final test accuracy, precision, recall, F1-score
-  - Confusion matrix
-  - Training time
+### Summary table
 
-- **Model Checkpoints**: Periodic and best-model weights saved for:
-  - Reproducibility
-  - Ensemble methods
-  - Fine-tuning
+| Model | Implementation | Pretrained | Image Size | Accuracy | Precision | Recall | F1 (macro) | Train Time (min) |
+|---|---|---|---|---|---|---|---|---|
+| gpleiss DenseNet-121 (checkpoint) | gpleiss | No | 64×64 | — | — | — | — | — |
+| gpleiss DenseNet-121 (standard) | gpleiss | No | 64×64 | — | — | — | — | — |
+| DenseNet-121 scratch | torchvision | No | 64×64 | — | — | — | — | — |
+| DenseNet-121 pretrained | torchvision | Yes | 224×224 | — | — | — | — | — |
+| ResNet-50 pretrained | torchvision | Yes | 224×224 | — | — | — | — | — |
+| GoogLeNet pretrained | torchvision | Yes | 224×224 | — | — | — | — | — |
 
-View results in `results/tables/` for formatted experiment comparisons.
+### Checkpointing comparison
 
-## Important Methodology Notes
+| Model | Accuracy | F1 (macro) | Avg Epoch Time (s) | Total Time (min) |
+|---|---|---|---|---|
+| gpleiss DenseNet-121 (checkpoint ON) | — | — | — | — |
+| gpleiss DenseNet-121 (checkpoint OFF) | — | — | — | — |
 
-### Fair Comparison Considerations
+### Per-class F1 scores
 
-1. **Split Methodology**: The Hugging Face EuroSAT split (16.2k/5.4k/5.4k) may differ from the original paper's methodology. Results are presented as "DenseNet under comparable conditions" unless the original EuroSAT split is reproduced.
+| Class | gpleiss standard | DenseNet-121 scratch | DenseNet-121 pretrained | ResNet-50 | GoogLeNet |
+|---|---|---|---|---|---|
+| Annual Crop | — | — | — | — | — |
+| Forest | — | — | — | — | — |
+| Herbaceous Vegetation | — | — | — | — | — |
+| Highway | — | — | — | — | — |
+| Industrial Buildings | — | — | — | — | — |
+| Pasture | — | — | — | — | — |
+| Permanent Crop | — | — | — | — | — |
+| Residential Buildings | — | — | — | — | — |
+| River | — | — | — | — | — |
+| Sea/Lake | — | — | — | — | — |
 
-2. **Image Resizing**: EuroSAT images (64×64) are resized to model-specific input sizes for ImageNet-pretrained models.
+---
 
-3. **Implementation Efficiency**: The memory-efficient DenseNet uses PyTorch checkpointing, which is an implementation detail (reduces memory usage) rather than an architectural change. Training time is ~15-20% longer due to recomputation.
+## Methodology Notes
+
+- **Optimizer:** Adam with weight decay 1e-4 for all models. Learning rate 0.001 for scratch models, 0.0001 for pretrained (fine-tuning).
+- **Scheduler:** StepLR — learning rate reduced by factor 0.1 every 20 epochs for scratch models (75 epochs), every 10 epochs for pretrained models (30 epochs).
+- **Best model selection:** The checkpoint with the highest validation accuracy is saved and used for final test evaluation.
+- **Reproducibility:** All runs use `seed: 42`. Results may vary slightly across hardware due to non-deterministic CUDA operations.
+- **Checkpointing:** Periodic epoch checkpoints are saved during training and deleted on successful run completion. Only `best_model.pt` and `final_model.pt` are retained.
+- **Hardware:** All experiments run on a single NVIDIA GeForce RTX 4070 (12 GB VRAM) under Windows 11.
+
+---
 
 ## References
 
 ### Papers
 
-- **DenseNet**: [Densely Connected Convolutional Networks](https://arxiv.org/abs/1608.06993)  
-  Huang, G., Liu, Z., van der Maaten, L., & Weinberger, K. Q. (2017). CVPR.
-
-- **Memory-Efficient DenseNet**: [Efficient Densely Connected Convolutional Networks with Checkpoint Learning](https://arxiv.org/abs/1707.06990)  
-  Pleiss, G., Chen, D., Huang, G., Li, T., van der Maaten, L., & Weinberger, K. Q. (2017).
-
-- **EuroSAT Dataset**: [EuroSAT: A Novel Dataset and Deep Learning Benchmark for Land Use and Land Cover Classification](https://arxiv.org/abs/1709.00029)  
-  Helber, P., Bischke, B., Dengel, A., & Borth, D. (2017).
+- **DenseNet:** [Densely Connected Convolutional Networks](https://arxiv.org/abs/1608.06993) — Huang et al., CVPR 2017
+- **Memory-Efficient DenseNet:** [Memory-Efficient Implementation of DenseNets](https://arxiv.org/pdf/1707.06990.pdf) — Pleiss et al., 2017
+- **EuroSAT:** [EuroSAT: A Novel Dataset and Deep Learning Benchmark for Land Use and Land Cover Classification](https://arxiv.org/abs/1709.00029) — Helber et al., 2017
 
 ### Repositories
 
-- [Original DenseNet (Lua)](https://github.com/liuzhuang13/DenseNet)
-- [Memory-Efficient DenseNet (PyTorch)](https://github.com/gpleiss/efficient_densenet_pytorch)
-- [Original EuroSAT Repository](https://github.com/phelber/EuroSAT)
-- [EuroSAT Dataset (Hugging Face)](https://huggingface.co/datasets/blanchon/EuroSAT_RGB)
-
-## Contributing
-
-This is a course project (CS637 Final Project). For inquiries about the code or methodology:
-
-1. Contact the project maintainers
-
-### Code Style
-
-- Python 3.9+
-- Type hints recommended for new code
-- Follow PEP 8 conventions
-- Document configuration parameters in base.yaml
-
-## Authors
-
-Jay ([@thejaysebastian](https://github.com/thejaysebastian))
-Mares ([@siroceans](https://github.com/siroceans))
+- [Memory-Efficient DenseNet (PyTorch) — gpleiss](https://github.com/gpleiss/efficient_densenet_pytorch)
+- [Original DenseNet (Lua) — liuzhuang13](https://github.com/liuzhuang13/DenseNet)
+- [Original EuroSAT repository — phelber](https://github.com/phelber/EuroSAT)
+- [EuroSAT RGB dataset — Hugging Face](https://huggingface.co/datasets/blanchon/EuroSAT_RGB)
 
 ---
 
-**Last Updated**: April 2026
+*CS637 Final Project · Spring 2026*
