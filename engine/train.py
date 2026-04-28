@@ -9,6 +9,7 @@ import copy
 import torch
 import torch.nn as nn
 import torch.optim as optim
+from utils.device import get_device
 
 def train_model(model, train_loader, val_loader, config):
     save_dir = f"results/experiments/{config.get('experiment_name', 'default')}"
@@ -23,7 +24,9 @@ def train_model(model, train_loader, val_loader, config):
     training_start_time = time.time()
     epoch_times = []
     
-    device = torch.device(config["device"] if torch.cuda.is_available() else "cpu")
+#    device = torch.device(config["device"] if torch.cuda.is_available() else "cpu")
+    device = get_device(config.get("device", "auto"))
+    print(f"Using device: {device}")
     model = model.to(device)
 
     criterion = nn.CrossEntropyLoss()
