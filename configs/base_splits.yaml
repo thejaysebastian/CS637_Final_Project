@@ -14,10 +14,10 @@ notes: "This is a test run for debugging purposes. The results will not be used 
 dataset: eurosat
 
 batch_size: 16 # testing on mps...
-num_workers: 0 #0 for debugging, otherwise 4
+num_workers: 2 #0 for debugging, otherwise 4
 
 # Training
-epochs: 1 # 16 for testing, 50 otherwise
+epochs: 16 # 16 for testing, 50 otherwise
 learning_rate: 0.001
 optimizer: adam #! Make sure that this shouldn't be SGD - check papers
 weight_decay: 0.0001

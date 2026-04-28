@@ -48,11 +48,13 @@ def main(train_fraction):
 
     results["split_info"] = split_info
 
-    save_dir = f"split_analysis/{config['experiment_name']}"
+    save_dir = f"results/experiments/{config['experiment_name']}"
     os.makedirs(save_dir, exist_ok=True)
 
     with open(os.path.join(save_dir, "metrics.json"), "w") as f:
         json.dump(results, f, indent=4)
+
+    return config["experiment_name"]
 
 if __name__ == "__main__":
     import argparse
