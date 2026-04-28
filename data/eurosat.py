@@ -77,7 +77,7 @@ def get_dataloaders_split(config, train_fraction):
     test_dataset = data_split["test"]
 
     # splitting the training pool into training and validation!
-    validation_fraction = config.get("validation_fraction", 0.2)
+    validation_fraction = 42
     inner_split = train_pool.train_test_split(
         test_size=validation_fraction, 
         seed = config.get("seed", 42), 

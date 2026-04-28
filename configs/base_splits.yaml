@@ -1,0 +1,36 @@
+# NOTE: Before experiments, set correct variables below, look at paper and dataset online delete this line after verifying that none of the values below should change. They can be overridden in the individual model config YAML files.
+
+# Flag to indicate if the run is a golden run (for final evaluation) or a test run (for debugging and experimentation). Uncomment the appropriate lines below based on the type of run you are conducting.
+
+golden_run: false
+notes: "This is a test run for debugging purposes. The results will not be used for final evaluation."
+
+#golden_run: true
+#notes: "This is a golden run for final evaluation. The results will be used for final evaluation and comparison with other models."
+
+#! THE BELOW SHOULD NOT CHANGE ONCE VERIFIED
+# However, we can override what needs to be overridden in each model YAML.
+# Data
+dataset: eurosat
+
+batch_size: 16 # testing on mps...
+num_workers: 0 #0 for debugging, otherwise 4
+
+# Training
+epochs: 16 # 5 for testing, 50 otherwise
+learning_rate: 0.001
+optimizer: adam #! Make sure that this shouldn't be SGD - check papers
+weight_decay: 0.0001
+
+# Scheduler - for training from scratch! Optional override in pretrained models
+scheduler: step
+step_size: 20
+gamma: 0.1
+
+# Loss - #! override to match papers in model YAMLs
+criterion: cross_entropy
+
+# System - note seed for reproduceability
+# can set device to be cuda or mps
+device: auto
+seed: 42
