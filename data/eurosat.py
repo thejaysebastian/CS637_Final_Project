@@ -119,7 +119,7 @@ def get_dataloaders_split(config, train_fraction):
     
     split_info = {
         "train_fraction": train_fraction, 
-        "test_fraction": 1.0 - train_fraction, 
+        "test_fraction": round(1.0 - train_fraction), 
         "train_size": len(train_dataset) + len(val_dataset), 
         "val_fraction_of_train_pool": validation_fraction, 
         "seed": config.get("seed", 42),
