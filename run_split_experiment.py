@@ -6,7 +6,3 @@ from utils.config import load_config
 import datetime
 import os
 import json
-
-
-import torch
-print(torch.backend.mps.is_available())
