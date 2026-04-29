@@ -324,6 +324,8 @@ Forest, Sea/Lake, and Residential Buildings are the highest-performing classes a
 ### Split-sensitivity experiments
 DenseNet-121 pretrained was also evaluated across multiple stratified train/test splits: 10/90, 20/80, ..., 90/10. This extends the split analysis from the original EuroSAT paper to our DenseNet-based pipeline.
 
+Performance improves rapidly as the training fraction increases from 10% to 30%, after which gains plateau, indicating that DenseNet-121 achieves near-optimal performance with relatively limited training data on EuroSAT.
+
 | Train/Test Split | Accuracy | Macro F1 | Precision (Macro) | Recall (Macro) |
 |------------------|----------|----------|--------------------|----------------|
 | 10/90            | 0.9662   | 0.9653   | 0.9665             | 0.9643         |
@@ -336,7 +338,6 @@ DenseNet-121 pretrained was also evaluated across multiple stratified train/test
 | 80/20            | 0.9831   | 0.9826   | 0.9830             | 0.9823         |
 | 90/10            | 0.9833   | 0.9827   | 0.9833             | 0.9823         |
 
-Performance improves rapidly as the training fraction increases from 10% to 30%, after which gains plateau, indicating that DenseNet-121 achieves near-optimal performance with relatively limited training data on EuroSAT.
 ---
 
 ## Methodology Notes
