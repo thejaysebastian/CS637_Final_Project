@@ -31,6 +31,7 @@ This project addresses three experimental axes:
 1. **Implementation efficiency** — Does gradient checkpointing in the memory-efficient DenseNet implementation affect classification performance, and what is the computational cost?
 2. **Pretraining effect** — How much does ImageNet pretraining improve DenseNet performance on EuroSAT compared to training from scratch?
 3. **Architecture comparison** — How does DenseNet perform against the ResNet-50 and GoogLeNet baselines reported in the original EuroSAT paper?
+4. **Split sensitivity** - How does DenseNet-121 performance change as the trainigng/testing split varies from 10/90 to 90/10, following the style of the original EuroSAT paper benchmarks?
 
 ---
 
@@ -56,8 +57,9 @@ Six models are evaluated in total. Each experiment is controlled for dataset, pr
 ### Prerequisites
 
 - Python 3.9+
-- CUDA 11.8+ recommended
 - 16 GB RAM recommended for training
+- Hardware acceleration supports CUDA, Apple, MPS, and CPU. The code automatically selects the best available device in the following order:
+CUDA -> MPS -> CPU
 
 ### Installation
 
@@ -69,10 +71,10 @@ source venv/bin/activate        # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-Verify GPU access:
+Verify hardware acceleration access:
 
 ```bash
-python -c "import torch; print(torch.cuda.is_available())"
+python -c "import torch; print('CUDA: ',torch.cuda.is_available()); print('MPS: ', torch.backends.mps.is_available())"
 ```
 
 ### Run a single experiment
@@ -113,6 +115,18 @@ Or use `run_gpleiss_all.py` to run only the two gpleiss DenseNet variants:
 
 ```bash
 python run_gpleiss_all.py
+```
+
+### Running split-sensitivity experiments
+
+Use `run_split_experiment.py` to run a single custom train/test split:
+```bash 
+python run_split_experiment.py --train-fraction 0.8
+```
+
+Use `run_all_splits.py` to run all split experiments from 10/90 through 90/10. 
+```bash 
+python run_all_splits.py 
 ```
 
 ### Configuration
@@ -165,12 +179,15 @@ CS637_Final_Project/
 ├── run_experiment.py           # Main experiment driver
 ├── run_all.py                  # Sequential batch runner (all 6 models)
 ├── run_gpleiss_all.py          # Sequential batch runner (gpleiss variants only)
+├── run_split_experiment.py     # Runs one custom train/test split
+├── run_all_splits.py           # Sequential batch runner (all splits)
 │
 ├── architectures/
 │   ├── densenet.py             # Memory-efficient DenseNet (gpleiss implementation)
 │   └── model_factory.py        # Unified model builder for all variants
 │
 ├── configs/
+|   ├── base_splits.yaml                    # mps defaults for split testing
 │   ├── base.yaml                           # Shared defaults
 │   ├── gpleiss_densenet121_checkpoint.yaml # gpleiss, efficient=True
 │   ├── gpleiss_densenet121_standard.yaml   # gpleiss, efficient=False
@@ -188,7 +205,8 @@ CS637_Final_Project/
 │   └── metrics.py              # Accuracy, precision, recall, F1, confusion matrix
 │
 ├── utils/
-│   └── config.py               # YAML config loader with base/override merging
+│   ├── config.py               # YAML config loader with base/override merging
+|   └── device.py               # Automatic CUDA/MPS/CPU device selection
 │
 └── results/                    # Generated at runtime — not committed
     └── experiments/
@@ -217,6 +235,8 @@ CS637_Final_Project/
 **Preprocessing:** Images are normalized using ImageNet statistics (`mean=[0.485, 0.456, 0.406]`, `std=[0.229, 0.224, 0.225]`). Models trained from scratch on 64×64 inputs receive no resizing. ImageNet-pretrained models receive images resized to 224×224 to match their expected input distribution.
 
 **Split note:** The Hugging Face split (60/20/20) may differ from the split used in the original EuroSAT paper. Results are presented as "DenseNet under comparable conditions" rather than a strict replication.
+
+**Split testing note:** For split-sensitivity experiments, the original Hugging Face train/validation/test partitions are recombined into a single dataset. New stratified train/test splits are then generated using the requested training fraction. A validation subset is taken from the training portion only for model selection.
 
 ---
 
@@ -300,6 +320,23 @@ ImageNet pretraining yields a 2.73% improvement in F1, converges in 30 epochs ve
 | Sea/Lake | **0.997** | 0.996 | 0.992 | 0.993 | 0.992 | 0.986 |
 
 Forest, Sea/Lake, and Residential Buildings are the highest-performing classes across all models. Permanent Crop and Herbaceous Vegetation are the lowest-performing classes in every model, reflecting visual similarity between crop and vegetation land-cover types rather than any architectural weakness.
+
+### Split-sensitivity experiments
+DenseNet-121 pretrained was also evaluated across multiple stratified train/test splits: 10/90, 20/80, ..., 90/10. This extends the split analysis from the original EuroSAT paper to our DenseNet-based pipeline.
+
+Performance improves rapidly as the training fraction increases from 10% to 30%, after which gains plateau, indicating that DenseNet-121 achieves near-optimal performance with relatively limited training data on EuroSAT.
+
+| Train/Test Split | Accuracy | Macro F1 | Precision (Macro) | Recall (Macro) |
+|------------------|----------|----------|--------------------|----------------|
+| 10/90            | 0.9662   | 0.9653   | 0.9665             | 0.9643         |
+| 20/80            | 0.9752   | 0.9744   | 0.9744             | 0.9745         |
+| 30/70            | 0.9803   | 0.9797   | 0.9807             | 0.9790         |
+| 40/60            | 0.9843   | 0.9837   | 0.9842             | 0.9833         |
+| 50/50            | 0.9838   | 0.9832   | 0.9833             | 0.9831         |
+| 60/40            | 0.9826   | 0.9818   | 0.9818             | 0.9820         |
+| 70/30            | 0.9788   | 0.9780   | 0.9779             | 0.9783         |
+| 80/20            | 0.9831   | 0.9826   | 0.9830             | 0.9823         |
+| 90/10            | 0.9833   | 0.9827   | 0.9833             | 0.9823         |
 
 ---
 

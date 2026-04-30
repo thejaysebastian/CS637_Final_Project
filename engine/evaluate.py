@@ -1,10 +1,14 @@
 import torch
 
 from engine.metrics import compute_metrics
+from utils.device import get_device
 
 
 def evaluate_model(model, test_loader, class_names, config):
-    device = torch.device(config["device"] if torch.cuda.is_available() else "cpu")
+#    device = torch.device(config["device"] if torch.cuda.is_available() else "cpu")
+    device = get_device(config.get("device", "auto"))
+    print(f"Using device: {device}")
+
     model = model.to(device)
     print("\n=== Final Test Evaluation ===")
     
